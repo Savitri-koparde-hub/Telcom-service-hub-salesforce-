@@ -1,5 +1,3 @@
-To effectively present your "Telecom Service Hub" project on GitHub, you can create a detailed `README.md` file using Markdown. This file will serve as the project's main page, providing a clear overview for visitors, collaborators, and potential users.
-
 ## Project Title and Description
 
 This section sets the stage by introducing your project and its core purpose.
