@@ -1,7 +1,3 @@
-Okay, here's the exact data you provided, formatted for a GitHub README file using Markdown.
-
----
-
 ## Project Title and Description
 # 💡 Telecom Service Hub – Customer & SIM Request Management System 💡
 
