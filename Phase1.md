@@ -1,5 +1,5 @@
 ## Project Title and Description
-# 💡 Telecom Service Hub – Customer & SIM Request Management System 💡
+# Telecom Service Hub – Customer & SIM Request Management System 
 
 **Industry:** Telecommunications
 **Project Type:** B2C Salesforce CRM Implementation
