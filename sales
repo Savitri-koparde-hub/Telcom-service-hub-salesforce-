@@ -1,0 +1,1 @@
+create a simple java application and perform tasks push code to github intsall ans configure jenkins on an ec2 intance ,create a jenkins job to pull code from github,configure the job to build the project using maven trigger the buikd automatically on code changes
