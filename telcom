@@ -1,0 +1,322 @@
+Below is a **complete, beginner-friendly, end-to-end CI setup** using:
+
+* Simple Java app
+* GitHub repository
+* AWS EC2 (Ubuntu)
+* Jenkins
+* Maven
+* GitHub Webhook (automatic build on code change)
+
+I’ve written this so you can **directly follow it for your DevOps lab / project demo**.
+
+---
+
+# PART 1 – Create Simple Java + Maven Application
+
+## 1. Create project on your local machine
+
+```bash
+mkdir java-ci-project
+cd java-ci-project
+```
+
+Create folders:
+
+```bash
+mkdir -p src/main/java
+```
+
+---
+
+## 2. Create Java file
+
+**src/main/java/Hello.java**
+
+```java
+public class Hello {
+    public static void main(String[] args) {
+        System.out.println("CI/CD Pipeline Working Successfully!");
+    }
+}
+```
+
+---
+
+## 3. Create Maven pom.xml
+
+**pom.xml**
+
+```xml
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.devops</groupId>
+    <artifactId>java-ci-project</artifactId>
+    <version>1.0</version>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
+```
+
+---
+
+## 4. Test locally
+
+```bash
+mvn clean package
+```
+
+You should see **BUILD SUCCESS**.
+
+---
+
+# PART 2 – Push Code to GitHub
+
+## 1. Create GitHub repository
+
+Name: `java-ci-project`
+
+---
+
+## 2. Push code
+
+```bash
+git init
+git add .
+git commit -m "Initial Java CI project"
+git branch -M main
+git remote add origin https://github.com/<your-username>/java-ci-project.git
+git push -u origin main
+```
+
+---
+
+# PART 3 – Launch EC2 Instance
+
+1. AWS Console → EC2 → Launch Instance
+2. Ubuntu 22.04
+3. Instance type: t2.micro
+4. Allow ports:
+
+| Port | Purpose |
+| ---- | ------- |
+| 22   | SSH     |
+| 8080 | Jenkins |
+
+5. Download key pair
+
+---
+
+# PART 4 – Install Java, Maven, Jenkins on EC2
+
+SSH into EC2:
+
+```bash
+ssh -i key.pem ubuntu@<EC2-Public-IP>
+```
+
+---
+
+## 1. Install Java
+
+```bash
+sudo apt update
+sudo apt install openjdk-17-jdk -y
+java -version
+```
+
+---
+
+## 2. Install Maven
+
+```bash
+sudo apt install maven -y
+mvn -version
+```
+
+---
+
+## 3. Install Jenkins
+
+```bash
+curl -fsSL https://pkg.jenkins.io/debian/jenkins.io-2023.key | sudo tee \
+  /usr/share/keyrings/jenkins-keyring.asc > /dev/null
+
+echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
+  https://pkg.jenkins.io/debian binary/ | sudo tee \
+  /etc/apt/sources.list.d/jenkins.list > /dev/null
+
+sudo apt update
+sudo apt install jenkins -y
+```
+
+Start Jenkins:
+
+```bash
+sudo systemctl start jenkins
+sudo systemctl enable jenkins
+```
+
+---
+
+## 4. Unlock Jenkins
+
+```bash
+sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+```
+
+Open:
+
+```
+http://EC2-PUBLIC-IP:8080
+```
+
+Install **Suggested Plugins** → Create admin user.
+
+---
+
+# PART 5 – Create Jenkins Job
+
+## 1. New Item → Freestyle Project
+
+Name: `java-ci-pipeline`
+
+---
+
+## 2. Configure GitHub Repo
+
+Source Code Management → Git
+
+Repo URL:
+
+```
+https://github.com/<your-username>/java-ci-project.git
+```
+
+Branch:
+
+```
+main
+```
+
+---
+
+## 3. Configure Maven Build
+
+Build Steps → Add → Invoke top-level Maven targets
+
+Goals:
+
+```
+clean package
+```
+
+---
+
+# PART 6 – Enable Auto Build (Webhook)
+
+## Jenkins side
+
+Job → Configure → Build Triggers:
+
+✔ GitHub hook trigger for GITScm polling
+
+Save.
+
+---
+
+## GitHub side
+
+Repository → Settings → Webhooks → Add webhook
+
+Payload URL:
+
+```
+http://EC2-PUBLIC-IP:8080/github-webhook/
+```
+
+Content type:
+
+```
+application/json
+```
+
+Select:
+
+✔ Just the push event
+
+Add webhook.
+
+---
+
+# PART 7 – Test Auto Build
+
+Make any code change:
+
+```java
+System.out.println("Auto build working!");
+```
+
+Then:
+
+```bash
+git add .
+git commit -m "Trigger build"
+git push
+```
+
+---
+
+## Result
+
+✔ GitHub push triggers webhook
+✔ Jenkins automatically pulls code
+✔ Maven builds project
+✔ Build success shown in Jenkins console
+
+---
+
+# Architecture Flow
+
+```
+Developer → GitHub → Webhook → Jenkins → Maven Build → Artifact
+```
+
+---
+
+# For Resume / Interview
+
+You can say:
+
+> Implemented CI pipeline using GitHub, Jenkins, Maven on AWS EC2 to automate build process triggered on code commits using GitHub webhooks.
+
+---
+
+If you want, I can also provide:
+
+✅ Jenkins Pipeline (Jenkinsfile version)
+✅ Screenshot checklist for submission
+✅ CI + CD deployment to EC2
+✅ Docker integration
+✅ Project report format
+✅ Interview questions
+✅ Troubleshooting commands
+
+Just tell 👍
